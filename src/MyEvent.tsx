@@ -14,7 +14,7 @@ class Action<T> {
     }
 
     subscribe(handler: EventHandler<T>) {
-        if (contains(this.handlers, handler)) console.log("Warning: handler already subscribed");
+        //if (contains(this.handlers, handler)) console.log("Warning: handler already subscribed");
         this.handlers.push(handler);
     }
 
@@ -25,13 +25,13 @@ class Action<T> {
     }
 
     dispatch(eventData: T) {
-        console.log("we are dispatching: " + [this.handlers.length, this.onceHandlers.length])
+        //console.log("we are dispatching: " + [this.handlers.length, this.onceHandlers.length])
         this.onceHandlers.slice(0).forEach(handler => { handler(eventData); this.unsubscribeOnce(handler)});
         this.handlers.slice(0).forEach(handler => handler(eventData));
     }
 
     subscribeOnce(handler: EventHandler<T>) {
-        if (contains(this.onceHandlers, handler)) console.log("Warning: once handler already subscribed");
+        //if (contains(this.onceHandlers, handler)) console.log("Warning: once handler already subscribed");
         this.onceHandlers.push(handler);
     }
 

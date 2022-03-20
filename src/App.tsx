@@ -169,7 +169,7 @@ class Unit {
 
     calculateMoves(calculatingUnit: boolean, save: boolean) {
         if (!calculatingUnit && save) {
-            console.log("problematic arguments");
+            //console.log("problematic arguments");
             return [];
         }
 
@@ -202,7 +202,7 @@ class Unit {
 
     calculateAttacks(calculatingUnit: boolean, save: boolean) {
         if (!calculatingUnit && save) {
-            console.log("problematic arguments");
+            //console.log("problematic arguments");
             return [];
         }
 
@@ -507,7 +507,7 @@ function checkIfCheck(color: Color) {
     let checked = false;
     for (let unit of units[oppositeColor[color]]) {
         if (unitChecks(unit)) {
-            console.log("CHECK: " + color + " is checked");
+            //console.log("CHECK: " + color + " is checked");
             check = color;
             checkedBy.push(unit);
             checked = true;
@@ -521,11 +521,11 @@ function unitChecks(unit: Unit) {
 }
 
 function checkmate(color: Color) {
-    console.log("CHECKMATE: " + oppositeColor[color] + " wins");
+    //console.log("CHECKMATE: " + oppositeColor[color] + " wins");
 }
 
 function stalemate() {
-    console.log("STALEMATE: draw");
+    //console.log("STALEMATE: draw");
 }
 
 interface ITileProps {
