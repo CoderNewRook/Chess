@@ -550,10 +550,10 @@ const tileColor = (tile: Tile, currentUnit: Unit | null) => {
         return "orange";
     }
     else if (check === turn && tile.unit === kings[turn]) {
-        return "pink";
+        return "orangered";
     }
     else if (contains(checkedBy, tile.unit)) {
-        return "purple";
+        return "indianred";
     }
     else if (tile.position.x % 2 === tile.position.y % 2) {
         return "green";
@@ -626,7 +626,7 @@ function PromotionContainer(props: { promote: (rank: Rank) => void }) {
 }
 
 function GameLog(props: { logs: string[] }) {
-    const logMessages = props.logs.map((msg, i) => <p className="LogMessage" key={"log" + i}>{msg}</p>);
+    const logMessages = props.logs.map((msg, i) => <p className="LogMessage" key={"log" + i}>{msg}</p>).reverse();
     return (
         <div id="GameLog">
             {logMessages}
@@ -643,6 +643,7 @@ interface IAppState {
     promotion: boolean;
     logs: string[];
     checkmated: boolean;
+    stalemated: boolean;
     subscribedLogs: boolean;
 }
 
@@ -670,6 +671,7 @@ class App extends React.Component<IAppProps, IAppState> {
             promotion: false,
             logs: [],
             checkmated: false,
+            stalemated: false,
             subscribedLogs: false
         }
         this.selectUnit = this.selectUnit.bind(this);
@@ -689,7 +691,7 @@ class App extends React.Component<IAppProps, IAppState> {
     }
 
     logUnitChecksMessage(unit: Unit) {
-        this.log(`${unit.color} ${logRank(unit.rank)} checks ${oppositeColor[unit.color]}`)
+        this.log(`${unit.color} ${logRank(unit.rank)} CHECKS ${oppositeColor[unit.color]}`)
     }
 
     componentDidMount() {
@@ -708,7 +710,7 @@ class App extends React.Component<IAppProps, IAppState> {
     }
 
     selectUnit(tile: Tile) {
-        if (this.state.checkmated) return;
+        if (this.state.checkmated || this.state.stalemated) return;
         if (this.state.promotion) return;
         if (this.state.currentUnit) {
             if (contains(this.state.currentUnit.availableMoves, tile) || contains(this.state.currentUnit.availableAttacks, tile)) {
@@ -769,13 +771,13 @@ class App extends React.Component<IAppProps, IAppState> {
         turn = oppositeColor[turn];
         if (units[turn].every(unit => unit.calculateMoves(true, false).length === 0)) {
             if (isCheck(turn)) {
-                this.log(`${oppositeColor[turn]} checkmates ${turn}`);
+                this.log(`${oppositeColor[turn]} CHECKMATES ${turn}`);
                 this.setState(prevState => ({ ...prevState, checkmated: true }));
                 checkmate(turn);
             }
             else {
-                this.log(`stalemate: draw`);
-                this.setState(prevState => ({ ...prevState, checkmated: true }));
+                this.log(`STALEMATE: DRAW`);
+                this.setState(prevState => ({ ...prevState, stalemated: true }));
                 stalemate();
             }
         }
@@ -801,14 +803,50 @@ class App extends React.Component<IAppProps, IAppState> {
         </div>)
         const promotionContainer = (<PromotionContainer promote={this.promote} />)
 
+        const whiteTakenBoard = <TakenDisplay units={takens[Color.WHITE]} reverseDisplay={true} />;
+        const blackTakenBoard = <TakenDisplay units={takens[Color.BLACK]} reverseDisplay={true} />;
+
+        let whiteMsg = "";
+        let blackMsg = "";
+
+
+        if (this.state.checkmated) {
+            if (turn === Color.WHITE) {
+                whiteMsg = "CHECKMATE";
+                blackMsg = "BLACK WINS";
+            }
+            else {
+                whiteMsg = "WHITE WINS";
+                blackMsg = "CHECKMATE";
+            }
+        }
+        else if (this.state.stalemated) {
+            if (turn === Color.WHITE) {
+                whiteMsg = "STALEMATE";
+                blackMsg = "DRAW";
+            }
+            else {
+                whiteMsg = "DRAW";
+                blackMsg = "STALEMATE";
+            }
+        }
+
+        const whiteEnding = <div className="EndingContainer">{whiteMsg}</div>;
+        const blackEnding = <div className="EndingContainer">{blackMsg}</div>;
+
+        const whiteTakenDisplay = this.state.checkmated || this.state.stalemated ? blackEnding
+            : this.state.promotion && this.state.currentUnit?.color === Color.WHITE ? promotionContainer : whiteTakenBoard;
+        const blackTakenDisplay = this.state.checkmated || this.state.stalemated ? whiteEnding
+            : this.state.promotion && this.state.currentUnit?.color === Color.BLACK ? promotionContainer : blackTakenBoard;
+
         return (
             <div id="ChessContainer">
                 <div id="Chess">
                     {turnTextContainer}
                     <div id="GameContainer">
-                        {this.state.promotion && this.state.currentUnit?.color === Color.WHITE ? promotionContainer : <TakenDisplay units={takens[Color.WHITE]} reverseDisplay={true} />}
+                        {whiteTakenDisplay}
                         <GridDisplay currentUnit={this.state.currentUnit} selectUnit={this.selectUnit} />
-                        {this.state.promotion && this.state.currentUnit?.color === Color.BLACK ? promotionContainer : <TakenDisplay units={takens[Color.BLACK]} reverseDisplay={false} />}
+                        {blackTakenDisplay}
                     </div>
                     <GameLog logs={this.state.logs} />
                 </div>

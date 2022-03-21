@@ -48,7 +48,7 @@
     flex-direction: row;
     align-items: center;
     align-self: center;
-    width: 80vw;
+    width: 71.5vw;
     height: 100vh;
 }
 
@@ -101,10 +101,16 @@
 }
 
 #PromotionContainer {
+    max-width: 64vh;
+    height: 18vh;
     display: flex;
 }
 
 .Promoter {
+    width: 16vh;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
     flex-grow: 1;
     text-align: center;
     font-size: 2em;
@@ -138,7 +144,7 @@
 
 #GameLog {
     height: 64vh;
-    width: 24vh;
+    min-width: 24vh;
     overflow-y: auto;
     margin-left: 15px;
     justify-content: start;
@@ -149,4 +155,13 @@
 
 .LogMessage {
     text-align: center;
+}
+
+.EndingContainer {
+    max-width: 64vh;
+    height: 18vh;
+    display: flex;
+    font-size: 5rem;
+    justify-content: center;
+    align-items: center;
 }
